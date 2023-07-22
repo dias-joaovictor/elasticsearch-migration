@@ -78,7 +78,6 @@ services:
     volumes:
       - ./infra/logstash/config:/usr/share/logstash/config
       - ./infra/logstash/pipeline:/usr/share/logstash/pipeline
-    command: logstash
   debezium-ui:
     image: debezium/debezium-ui
     container_name: debezium-ui
@@ -94,8 +93,6 @@ services:
       - elasticsearch
     volumes:
       - kibana-data:/usr/share/kibana/data
-    #   - ./infra/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-    #   - ./infra/cert/cert.pem:/usr/share/kibana/config/cacert.pem
     ports:
       - "5601:5601"
 
