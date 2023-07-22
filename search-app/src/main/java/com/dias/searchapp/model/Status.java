@@ -1,4 +1,4 @@
-package com.dias.legacyapp.model;
+package com.dias.searchapp.model;
 
 public enum Status {
     PLACED,
