@@ -1,4 +1,4 @@
 - pipeline.id: debezium-orders
   path.config: "/usr/share/logstash/pipeline/debezium-orders.conf"
-- pipeline.id: migration
-  path.config: "/usr/share/logstash/pipeline/migration.conf"
+- pipeline.id: orders
+  path.config: "/usr/share/logstash/pipeline/orders.conf"
