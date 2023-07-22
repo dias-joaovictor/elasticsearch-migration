@@ -15,9 +15,8 @@ public class OrderCreationTask {
 
     private final OrderCreationService orderCreationService;
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void createOrder() {
-        log.info("Creating orders if necessary");
         orderCreationService.createIfNecessary();
     }
 

@@ -21,7 +21,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
-      KAFKA_CREATE_TOPICS: Order:1:1
+      KAFKA_CREATE_TOPICS: Order:1:1,MigratedOrders:1:1
 
   mysql:
     image: mysql:8.0.33
@@ -35,7 +35,7 @@ services:
       MYSQL_ROOT_PASSWORD: order-legacy-root-password
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    image: elasticsearch:8.8.1
     depends_on:
       - kafka
       - mysql
@@ -43,8 +43,9 @@ services:
       - node.name=elasticsearch
       - cluster.name=es-docker-cluster
       - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS="-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node
+      - xpack.security.enabled=false
     ulimits:
       memlock:
         soft: -1
@@ -53,9 +54,10 @@ services:
       - es_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
+      - "9300:9300"
 
-  connect:
-    image: debezium/connect:1.5
+  debezium-connect:
+    image: debezium/connect:2.4
     depends_on:
       - elasticsearch
     ports:
@@ -66,6 +68,38 @@ services:
       - CONFIG_STORAGE_TOPIC=my_connect_configs
       - OFFSET_STORAGE_TOPIC=my_connect_offsets
       - STATUS_STORAGE_TOPIC=my_connect_statuses
+  logstash:
+    image: logstash:8.8.1
+    depends_on:
+      - elasticsearch
+      - debezium-connect
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./infra/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./infra/logstash/pipeline:/usr/share/logstash/pipeline
+  debezium-ui:
+    image: debezium/debezium-ui
+    container_name: debezium-ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CONNECT_URIS: http://debezium-connect:8083
+    depends_on:
+      - debezium-connect
+  kibana:
+    image: kibana:8.8.1
+    depends_on:
+      - elasticsearch
+    volumes:
+      - kibana-data:/usr/share/kibana/data
+    #   - ./infra/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    #   - ./infra/cert/cert.pem:/usr/share/kibana/config/cacert.pem
+    ports:
+      - "5601:5601"
+
 volumes:
   es_data:
+    driver: local
+  kibana-data:
     driver: local

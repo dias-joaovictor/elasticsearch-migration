@@ -1,0 +1,8 @@
+server.name: kibana
+#server.host: "0.0.0.0"
+elasticsearch.hosts: [ "https://elasticsearch:9200" ]
+# elasticsearch.username: "root"
+# elasticsearch.password: "root"
+# elasticsearch.ssl.certificateAuthorities: [ "/usr/share/kibana/config/cacert.pem" ]
+# elasticsearch.ssl.verificationMode: none
+

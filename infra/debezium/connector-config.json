@@ -1,0 +1,19 @@
+{
+    "name": "orders-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+        "database.hostname": "mysql",
+        "database.port": "3306",
+        "database.user": "root",
+        "database.password": "order-legacy-root-password",
+        "database.server.id": "184054",
+        "database.server.name": "debezium",
+        "database.include.list": "order-legacy",
+        "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
+        "schema.history.internal.kafka.topic": "debezium.inventory.schema-changes",
+        "include.schema.changes": "false",
+        "database.sslmode": "disabled",
+        "database.allowPublicKeyRetrieval": "true",
+        "topic.prefix": "debezium"
+    }
+}

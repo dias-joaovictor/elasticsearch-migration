@@ -30,4 +30,6 @@ public class Order {
 
     private String name;
 
+    private boolean updated;
+
 }

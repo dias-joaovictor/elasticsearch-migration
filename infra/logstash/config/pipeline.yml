@@ -1,0 +1,4 @@
+- pipeline.id: daily-feed
+  path.config: "/usr/share/logstash/pipeline/daily-feed.conf"
+- pipeline.id: migration
+  path.config: "/usr/share/logstash/pipeline/migration.conf"
