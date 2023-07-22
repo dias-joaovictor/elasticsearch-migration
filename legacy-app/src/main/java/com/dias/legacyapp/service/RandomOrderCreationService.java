@@ -1,8 +1,5 @@
 package com.dias.legacyapp.service;
 
-import com.dias.legacyapp.dao.AddressRepository;
-import com.dias.legacyapp.dao.LineStatusRepository;
-import com.dias.legacyapp.dao.OrderLineRepository;
 import com.dias.legacyapp.dao.OrderRepository;
 import com.dias.legacyapp.model.Address;
 import com.dias.legacyapp.model.LineStatus;
@@ -10,12 +7,9 @@ import com.dias.legacyapp.model.Order;
 import com.dias.legacyapp.model.OrderLine;
 import com.dias.legacyapp.model.Status;
 import com.github.javafaker.Faker;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -28,9 +22,6 @@ import java.util.Random;
 public class RandomOrderCreationService {
 
     private final OrderRepository orderRepository;
-    private final AddressRepository addressRepository;
-    private final OrderLineRepository orderLineRepository;
-    private final LineStatusRepository LineStatusRepository;
     private final Faker faker;
     private final Random random;
 
@@ -38,10 +29,6 @@ public class RandomOrderCreationService {
         // Create random Addresses
         Address shipToAddress = generateRandomAddress();
         Address billToAddress = generateRandomAddress();
-
-        // Save Addresses to DB
-        addressRepository.save(shipToAddress);
-        addressRepository.save(billToAddress);
 
         // Create Order with random Addresses
         Order order = new Order();
@@ -53,7 +40,6 @@ public class RandomOrderCreationService {
 
         // Create random OrderLines and save them to DB
         List<OrderLine> orderLines = generateRandomOrderLines(order);
-        orderLineRepository.saveAll(orderLines);
 
         // Set OrderLines to Order
         order.setOrderLines(orderLines);
@@ -99,7 +85,6 @@ public class RandomOrderCreationService {
 
             // Create random LineStatuses and save them to DB
             List<LineStatus> LineStatuses = generateRandomLineStatuses(orderLine);
-            LineStatusRepository.saveAll(LineStatuses);
 
             // Set LineStatuses to OrderLine
             orderLine.setLineStatuses(LineStatuses);
@@ -112,10 +97,10 @@ public class RandomOrderCreationService {
 
     private List<LineStatus> generateRandomLineStatuses(OrderLine orderLine) {
         List<LineStatus> LineStatuses = new ArrayList<>();
-        for (int i = 0; i < random.nextInt(3) + 1; i++) {
+        for (int i = 0; i < random.nextInt(Status.values().length) + 1; i++) {
             LineStatus LineStatus = new LineStatus();
             LineStatus.setDate(orderLine.getOrder().getPlacedDate().plusDays(i));
-            LineStatus.setStatus(Status.values()[random.nextInt(Status.values().length)]);
+            LineStatus.setStatus(Status.values()[i]);
             LineStatus.setOrderLine(orderLine);
 
             LineStatuses.add(LineStatus);
