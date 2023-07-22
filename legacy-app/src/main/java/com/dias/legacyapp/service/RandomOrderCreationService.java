@@ -1,6 +1,5 @@
 package com.dias.legacyapp.service;
 
-import com.dias.legacyapp.dao.OrderRepository;
 import com.dias.legacyapp.model.Address;
 import com.dias.legacyapp.model.LineStatus;
 import com.dias.legacyapp.model.Order;
@@ -8,9 +7,9 @@ import com.dias.legacyapp.model.OrderLine;
 import com.dias.legacyapp.model.Status;
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -21,14 +20,14 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class RandomOrderCreationService {
 
-    private final OrderRepository orderRepository;
     private final Faker faker;
     private final Random random;
 
     public Order generateRandomOrder() {
         // Create random Addresses
         Address shipToAddress = generateRandomAddress();
-        Address billToAddress = generateRandomAddress();
+
+        Address billToAddress = random.nextBoolean() ? generateRandomAddress() : shipToAddress;
 
         // Create Order with random Addresses
         Order order = new Order();
@@ -38,21 +37,17 @@ public class RandomOrderCreationService {
         order.setShipTo(shipToAddress);
         order.setBillTo(billToAddress);
 
-        // Create random OrderLines and save them to DB
+        // Create random OrderLines
         List<OrderLine> orderLines = generateRandomOrderLines(order);
 
         // Set OrderLines to Order
         order.setOrderLines(orderLines);
 
-        // Save Order to DB
-        orderRepository.save(order);
-
         return order;
     }
 
-    @NotNull
     private LocalDateTime getRandomDate() {
-        LocalDateTime startDateTime = LocalDateTime.of(2020, 1, 1, 0, 0); // start datetime
+        LocalDateTime startDateTime = LocalDate.of(2007, 1, 1).atStartOfDay(); // start datetime
         LocalDateTime endDateTime = LocalDateTime.now(); // end datetime
 
         long secondsBetween = ChronoUnit.SECONDS.between(startDateTime, endDateTime);
@@ -83,7 +78,7 @@ public class RandomOrderCreationService {
             orderLine.setPrice(random.nextInt(100) + random.nextDouble());
             orderLine.setOrder(order);
 
-            // Create random LineStatuses and save them to DB
+            // Create random LineStatuses
             List<LineStatus> LineStatuses = generateRandomLineStatuses(orderLine);
 
             // Set LineStatuses to OrderLine

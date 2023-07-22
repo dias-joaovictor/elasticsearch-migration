@@ -13,11 +13,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class OrderCreationTask {
 
+    public static final int BATCH_SIZE = 1000;
+
     private final OrderCreationService orderCreationService;
 
     @Scheduled(cron = "0/30 * * * * ?")
     public void createOrder() {
-        orderCreationService.createIfNecessary();
+        orderCreationService.createIfNecessary(BATCH_SIZE);
     }
 
 }

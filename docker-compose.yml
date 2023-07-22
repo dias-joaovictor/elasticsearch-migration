@@ -76,8 +76,9 @@ services:
     ports:
       - "5001:5000"
     volumes:
-      - ./infra/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./infra/logstash/config:/usr/share/logstash/config
       - ./infra/logstash/pipeline:/usr/share/logstash/pipeline
+    command: logstash
   debezium-ui:
     image: debezium/debezium-ui
     container_name: debezium-ui

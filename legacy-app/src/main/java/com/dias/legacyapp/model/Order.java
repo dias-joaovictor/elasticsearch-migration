@@ -31,7 +31,6 @@ import java.util.List;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String orderId;
 
     private LocalDateTime placedDate;
@@ -48,4 +47,6 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderLine> orderLines;
+
+    private boolean exported;
 }

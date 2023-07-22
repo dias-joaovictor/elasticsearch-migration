@@ -1,5 +1,6 @@
 package com.dias.legacyapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,6 +34,7 @@ public class LineStatus {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "orderLineId", nullable = false)
     private OrderLine orderLine;

@@ -1,5 +1,6 @@
 package com.dias.legacyapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,6 +37,7 @@ public class OrderLine {
     @OneToMany(mappedBy = "orderLine", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LineStatus> lineStatuses;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "orderId", nullable = false)
     private Order order;

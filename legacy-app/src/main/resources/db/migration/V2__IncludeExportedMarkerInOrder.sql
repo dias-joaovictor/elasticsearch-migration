@@ -1,1 +1,1 @@
-CREATE INDEX placedDate_IDX ON Orders (placedDate);
+ALTER TABLE Orders add column exported boolean not null default false;

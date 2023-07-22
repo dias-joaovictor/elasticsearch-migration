@@ -1,34 +1,33 @@
 package com.dias.legacyapp.service;
 
 import com.dias.legacyapp.dao.OrderRepository;
-import com.dias.legacyapp.model.Order;
-import jakarta.annotation.PostConstruct;
+import com.dias.legacyapp.messaging.OrderMigrationProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OrderCreationService {
+public class OrderExporterService {
 
-    private static final int MAX_ORDERS = 20000;
 
     private final OrderRepository orderRepository;
-    private final RandomOrderCreationService randomOrderCreationService;
+    private final OrderMigrationProducer orderMigrationProducer;
 
-    public void createIfNecessary() {
-        var itemsToCreate = MAX_ORDERS - orderRepository.count();
-        log.info("Is necessary to create more registries? {}", itemsToCreate > 0);
-        if (itemsToCreate > 0) {
-            log.info("Creating {} orders", itemsToCreate);
-            for (int i = 0; i < itemsToCreate; i++) {
-                Order order = randomOrderCreationService.generateRandomOrder();
-                orderRepository.save(order);
-            }
-        }
+    public void exportOrders(int batchSize) {
+        orderRepository.findAllByExported(false, Pageable.ofSize(batchSize))
+                .stream()
+                .filter(Objects::nonNull)
+                .forEach(order -> {
+                    orderMigrationProducer.produce(order);
+                    order.setExported(true);
+                    orderRepository.save(order);
+                });
+
     }
-
 }
